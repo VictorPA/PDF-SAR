@@ -1,20 +1,18 @@
-package pdfParser;
-
-import org.springframework.context.annotation.PropertySource;
+package zgui;
 
 import javax.swing.*;
+import java.io.File;
 
 /**
  * Created by Victor on 23/06/2016.
  */
 
 
-public class FolderWithPdfsChooser {
+public class FolderChooser {
 
-    private JFileChooser chooser;
+    private final JFileChooser chooser;
 
-
-    private FolderWithPdfsChooser() {
+    private FolderChooser() {
         setLookAndFeel();
         chooser = new JFileChooser();
         configureChooser();
@@ -33,22 +31,24 @@ public class FolderWithPdfsChooser {
         chooser.setDialogTitle("Sélectionner le dossier contenant les pdfs");
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
-        chooser.setDragEnabled(true);
+
     }
 
-    static FolderWithPdfsChooser newInstance() {
-        return new FolderWithPdfsChooser();
+    public static FolderChooser newInstance() {
+        return new FolderChooser();
     }
 
-    public String choose() {
-
-        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            return chooser.getSelectedFile().toString();
-        } else {
-            return null;
+    public File choose() {
+        int dialogIssue = chooser.showOpenDialog(null);
+        File folder;
+        switch (dialogIssue) {
+            case JFileChooser.APPROVE_OPTION:
+                folder = chooser.getSelectedFile();
+                break;
+            default:
+                folder = null;
         }
+        return folder;
 
     }
-
-
 }
