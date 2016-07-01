@@ -8,50 +8,31 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 
 /**
  * Created by Victor on 25/06/2016.
  */
-public class FilePreparedForTreatment {
+public abstract class FilePreparedForTreatment {
 
-    private PDFTextStripper pdfStripper;
-    private RandomAccessFile randomAccessFile;
-    private COSDocument cosDoc;
-    private PDDocument pdDoc;
     private File file;
 
-
-    public FilePreparedForTreatment(File file) {
+    private FilePreparedForTreatment(File file) {
         this.file = file;
     }
 
-    public void init() {
-
+    public static FilePreparedForTreatment getPreparedFileForTreatment(File file) {
         try {
-            this.randomAccessFile = new RandomAccessFile(file, "r");
-            PDFParser pdfParser = new PDFParser(this.randomAccessFile);
-            pdfParser.parse();
-            this.cosDoc = pdfParser.getDocument();
-            this.pdDoc = new PDDocument(cosDoc);
-            this.pdfStripper = new PDFTextStripper();
+            return new PdfPrepareForTreatement(file);
         } catch (IOException e) {
-
+            return new NullPdfBox(file);
         }
     }
 
 
-    public String getFileParsedToString() throws IOException {
-        return this.pdfStripper.getText(pdDoc);
-    }
 
-    public void close() throws IOException {
-        this.pdDoc.close();
-        this.cosDoc.close();
-        this.randomAccessFile.close();
-    }
+    public abstract String getFileParsedToString() throws IOException;
 
     public Path getPath() {
         return this.file.toPath();
@@ -59,6 +40,48 @@ public class FilePreparedForTreatment {
 
     public String getOutputName() {
         return this.file.getName();
+    }
+
+
+    public abstract void close() throws IOException;
+
+    private static class PdfPrepareForTreatement extends FilePreparedForTreatment {
+
+
+        private PDFTextStripper pdfStripper;
+        private RandomAccessFile randomAccessFile;
+        private COSDocument cosDoc;
+        private PDDocument pdDoc;
+
+        private PdfPrepareForTreatement(File file) throws IOException {
+
+            super(file);
+            this.randomAccessFile = new RandomAccessFile(file, "r");
+            PDFParser pdfParser = new PDFParser(this.randomAccessFile);
+            pdfParser.parse();
+            this.cosDoc = pdfParser.getDocument();
+            this.pdDoc = new PDDocument(cosDoc);
+            this.pdfStripper = new PDFTextStripper();
+        }
+
+        public String getFileParsedToString() throws IOException {
+            return this.pdfStripper.getText(pdDoc);
+        }
+
+        public void close() throws IOException {
+            this.pdDoc.close();
+            this.cosDoc.close();
+            this.randomAccessFile.close();
+        }
+
+        public Path getPath() {
+            return super.getPath();
+        }
+
+        public String getOutputName() {
+            return super.getOutputName();
+        }
+
     }
 
     private static class NullPdfBox extends FilePreparedForTreatment {
@@ -72,16 +95,21 @@ public class FilePreparedForTreatment {
             return null;
         }
 
-        @Override public Path getPath() {
+        @Override
+        public Path getPath() {
             return null;
         }
 
-        @Override public String getOutputName() {
+        @Override
+        public String getOutputName() {
             return null;
         }
 
-        @Override public void close() throws IOException {
+        @Override
+        public void close() throws IOException {
 
         }
     }
+
+
 }

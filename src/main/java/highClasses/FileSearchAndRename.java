@@ -42,7 +42,7 @@ public class FileSearchAndRename {
 
     private void transform(File file) {
         try {
-            FilePreparedForTreatment filePreparedForTreatment = new FilePreparedForTreatment(file);
+            FilePreparedForTreatment filePreparedForTreatment = FilePreparedForTreatment.getPreparedFileForTreatment(file);
             String fileAsString = fileToString(filePreparedForTreatment);
             String matchedText = getMatchedStringAfterApplyingSearchPattern(fileAsString);
             filePreparedForTreatment.close();
