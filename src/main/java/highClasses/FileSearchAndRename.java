@@ -1,10 +1,8 @@
 package highClasses;
 
 
-import utility.MatcherFactory;
-import workerClasses.FileModifierEngine;
-import workerClasses.FilePreparedForTreatment;
-import zgui.FilesProvider;
+import workerClasses.notGuiGroup.FileModifierEngine;
+import workerClasses.notGuiGroup.FilePreparedForTreatment;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +14,6 @@ import java.util.List;
 public class FileSearchAndRename {
 
     private static final String FILE_EXTENSION = ".pdf";
-
     private final FilesProvider filesProvider;
     private final FileModifierEngine fileModifierEngine;
     private final MatcherFactory matcherFactory;
@@ -45,31 +42,20 @@ public class FileSearchAndRename {
 
     private void transform(File file) {
         try {
-            FilePreparedForTreatment convenientFile = makeFileConvenient(file);
-            if (convenientFile != null) {
-                String fileAsString = fileToString(convenientFile);
-                String matchedText = getMatchedStringAfterApplyingSearchPattern(fileAsString);
-                convenientFile.close();
-                if(matchedText != null && !matchedText.isEmpty()){
-                    File outputFile = fileModifierEngine.modifyFile(convenientFile, matchedText);
-                    if (outputFile != null) {
-                        System.out.println(file.getName() + " ==> " + outputFile.getName());
-                        treatedFiles++;
-                    }
+            FilePreparedForTreatment filePreparedForTreatment = new FilePreparedForTreatment(file);
+            String fileAsString = fileToString(filePreparedForTreatment);
+            String matchedText = getMatchedStringAfterApplyingSearchPattern(fileAsString);
+            filePreparedForTreatment.close();
+            if (!matchedText.isEmpty()) {
+                File outputFile = fileModifierEngine.modifyFile(filePreparedForTreatment, matchedText);
+                if (outputFile != null) {
+                    System.out.println(file.getName() + " ==> " + outputFile.getName());
+                    treatedFiles++;
                 }
-
             }
-        } catch (FileNotTreatableException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private FilePreparedForTreatment makeFileConvenient(File file) throws FileNotTreatableException {
-        FilePreparedForTreatment filePreparedForTreatment = null;
-        if (file.isFile()) {
-            filePreparedForTreatment = new FilePreparedForTreatment(file);
-        }
-        return filePreparedForTreatment;
     }
 
     private String fileToString(FilePreparedForTreatment filePreparedForTreatment) {

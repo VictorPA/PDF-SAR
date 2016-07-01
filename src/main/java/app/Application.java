@@ -3,10 +3,10 @@ package app;
 import highClasses.FileSearchAndRename;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import utility.CommonMatcherFactory;
-import utility.MatcherFactory;
-import workerClasses.FileModifierEngine;
-import zgui.FilesProvider;
-import zgui.FolderChooser;
+import highClasses.MatcherFactory;
+import workerClasses.notGuiGroup.FileModifierEngine;
+import highClasses.FilesProvider;
+import workerClasses.guiGroup.FolderChooser;
 
 import java.security.Security;
 

@@ -1,4 +1,5 @@
-package workerClasses;
+package workerClasses.notGuiGroup;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class FileModifierEngine {
         File finalFile = null;
 
         try {
-            if (!filePreparedForTreatment.getOutputName().contains(filteredMatchedText)) {
+            if (!filteredMatchedText.isEmpty() && !filePreparedForTreatment.getOutputName().contains(filteredMatchedText)) {
                 Path target = source.resolveSibling(filteredMatchedText + "_" + filePreparedForTreatment.getOutputName());
                 Files.move(source, target);
                 finalFile = target.toFile();

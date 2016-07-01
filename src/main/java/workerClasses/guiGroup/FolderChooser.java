@@ -1,4 +1,6 @@
-package zgui;
+package workerClasses.guiGroup;
+
+import highClasses.FilesProvider;
 
 import javax.swing.*;
 import java.io.File;
@@ -60,15 +62,13 @@ public class FolderChooser implements FilesProvider {
 
     private File chooseFolderWithGui() {
         int dialogIssue = chooser.showOpenDialog(null);
-        File folder;
-        switch (dialogIssue) {
-            case JFileChooser.APPROVE_OPTION:
-                folder = chooser.getSelectedFile();
-                break;
-            default:
-                folder = null;
+        File folder = null;
+        if (dialogIssue == JFileChooser.APPROVE_OPTION) {
+            folder = chooser.getSelectedFile();
         }
+
         return folder;
+
 
     }
 

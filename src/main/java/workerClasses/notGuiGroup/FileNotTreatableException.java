@@ -1,4 +1,4 @@
-package highClasses;
+package workerClasses.notGuiGroup;
 
 /**
  * Created by Victor on 29/06/2016.

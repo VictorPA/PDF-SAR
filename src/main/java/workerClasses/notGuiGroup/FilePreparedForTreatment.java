@@ -1,6 +1,6 @@
-package workerClasses;
+package workerClasses.notGuiGroup;
 
-import highClasses.FileNotTreatableException;
+
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -17,32 +18,32 @@ import java.nio.file.Path;
 public class FilePreparedForTreatment {
 
     private PDFTextStripper pdfStripper;
-    private String outputName;
-    private Path path;
     private RandomAccessFile randomAccessFile;
     private COSDocument cosDoc;
     private PDDocument pdDoc;
-    private boolean isClosed;
+    private File file;
 
-    public FilePreparedForTreatment(File file) throws FileNotTreatableException {
+
+    public FilePreparedForTreatment(File file) {
+        this.file = file;
+    }
+
+    public void init() {
 
         try {
-            this.outputName = file.getName();
-            this.path = file.toPath();
             this.randomAccessFile = new RandomAccessFile(file, "r");
             PDFParser pdfParser = new PDFParser(this.randomAccessFile);
             pdfParser.parse();
             this.cosDoc = pdfParser.getDocument();
             this.pdDoc = new PDDocument(cosDoc);
             this.pdfStripper = new PDFTextStripper();
-            this.isClosed = false;
         } catch (IOException e) {
-            throw new FileNotTreatableException("Erreur lors de la préparation du fichier", outputName);
-        }
 
+        }
     }
 
-    public String getFileParsedToString() throws Exception {
+
+    public String getFileParsedToString() throws IOException {
         return this.pdfStripper.getText(pdDoc);
     }
 
@@ -50,18 +51,37 @@ public class FilePreparedForTreatment {
         this.pdDoc.close();
         this.cosDoc.close();
         this.randomAccessFile.close();
-        this.isClosed = true;
-    }
-
-    public boolean isClosed(){
-        return this.isClosed;
     }
 
     public Path getPath() {
-        return this.path;
+        return this.file.toPath();
     }
 
     public String getOutputName() {
-        return this.outputName;
+        return this.file.getName();
+    }
+
+    private static class NullPdfBox extends FilePreparedForTreatment {
+
+        private NullPdfBox(File file) {
+            super(file);
+        }
+
+        @Override
+        public String getFileParsedToString() throws IOException {
+            return null;
+        }
+
+        @Override public Path getPath() {
+            return null;
+        }
+
+        @Override public String getOutputName() {
+            return null;
+        }
+
+        @Override public void close() throws IOException {
+
+        }
     }
 }

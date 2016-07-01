@@ -21,9 +21,7 @@ public class NumberMatcher implements highClasses.Matcher{
         if (fileAsString != null) {
             matcher = pattern.matcher(fileAsString);
         }
-        String filteredMatchedText;
-        filteredMatchedText = extractMatchedPattern(matcher);
-        return filteredMatchedText;
+        return extractMatchedPattern(matcher);
     }
 
     private String extractMatchedPattern(Matcher matcher) {
@@ -35,8 +33,7 @@ public class NumberMatcher implements highClasses.Matcher{
                 if (Character.isDigit(rawMatchedText.charAt(c)))
                     filteredMatchedText += rawMatchedText.charAt(c);
             }
-        } else
-            filteredMatchedText = null;
+        }
         return filteredMatchedText;
     }
 }
