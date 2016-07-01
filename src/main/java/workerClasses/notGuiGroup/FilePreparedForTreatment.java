@@ -16,7 +16,7 @@ import java.nio.file.Path;
  */
 public abstract class FilePreparedForTreatment {
 
-    private File file;
+    protected File file;
 
     private FilePreparedForTreatment(File file) {
         this.file = file;
@@ -33,17 +33,15 @@ public abstract class FilePreparedForTreatment {
 
 
     public abstract String getFileParsedToString() throws IOException;
+    public abstract void close() throws IOException;
+    public abstract String getOutputName();
 
     public Path getPath() {
         return this.file.toPath();
     }
 
-    public String getOutputName() {
-        return this.file.getName();
-    }
 
 
-    public abstract void close() throws IOException;
 
     private static class PdfPrepareForTreatement extends FilePreparedForTreatment {
 
@@ -56,7 +54,7 @@ public abstract class FilePreparedForTreatment {
         private PdfPrepareForTreatement(File file) throws IOException {
 
             super(file);
-            this.randomAccessFile = new RandomAccessFile(file, "r");
+            this.randomAccessFile = new RandomAccessFile(this.file, "r");
             PDFParser pdfParser = new PDFParser(this.randomAccessFile);
             pdfParser.parse();
             this.cosDoc = pdfParser.getDocument();
@@ -74,12 +72,9 @@ public abstract class FilePreparedForTreatment {
             this.randomAccessFile.close();
         }
 
-        public Path getPath() {
-            return super.getPath();
-        }
-
+        @Override
         public String getOutputName() {
-            return super.getOutputName();
+            return file.getName();
         }
 
     }
@@ -92,17 +87,12 @@ public abstract class FilePreparedForTreatment {
 
         @Override
         public String getFileParsedToString() throws IOException {
-            return null;
-        }
-
-        @Override
-        public Path getPath() {
-            return null;
+            return "";
         }
 
         @Override
         public String getOutputName() {
-            return null;
+            return "";
         }
 
         @Override
