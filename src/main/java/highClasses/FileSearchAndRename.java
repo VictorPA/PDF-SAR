@@ -3,11 +3,12 @@ package highClasses;
 
 import utility.MatcherFactory;
 import workerClasses.FileModifierEngine;
-import workerClasses.ProcessedFile;
-import zgui.FolderChooser;
+import workerClasses.FilePreparedForTreatment;
+import zgui.FilesProvider;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by Victor on 23/06/2016.
@@ -16,81 +17,72 @@ public class FileSearchAndRename {
 
     private static final String FILE_EXTENSION = ".pdf";
 
-    private final FolderChooser folderChooser;
+    private final FilesProvider filesProvider;
     private final FileModifierEngine fileModifierEngine;
     private final MatcherFactory matcherFactory;
     private String regex;
     private int totalFiles = 0;
     private int treatedFiles = 0;
 
-    public FileSearchAndRename(String regex, FileModifierEngine fileModifierEngine, FolderChooser folderChooser, MatcherFactory matcherFactory) {
+    public FileSearchAndRename(String regex, FileModifierEngine fileModifierEngine, FilesProvider filesProvider, MatcherFactory matcherFactory) {
         this.matcherFactory = matcherFactory;
-        this.folderChooser = folderChooser;
+        this.filesProvider = filesProvider;
         this.fileModifierEngine = fileModifierEngine;
         this.regex = regex;
     }
 
-    public void doSearchAndRename() {
+    public void searchAndTransform() {
 
-        File chosenFolder = folderChooser.choose();
-        if (chosenFolder != null && chosenFolder.isDirectory()) {
-            File[] files = chosenFolder.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (extensionIsValid(file)) {
-                        treat(file);
-                        ++totalFiles;
-                    }
-
-                }
-                System.out.println("Nombre de fichiers traités : " + treatedFiles + " sur " + totalFiles);
+        List<File> fileList = filesProvider.getFiles();
+        for (File file : fileList) {
+            if (extensionIsValid(file)) {
+                transform(file);
+                ++totalFiles;
             }
-        } else
-            System.out.println("Annulation");
+        }
+        System.out.println("Nombre de fichiers traités : " + treatedFiles + " sur " + totalFiles);
     }
 
-    private void treat(File file) {
-
-        ProcessedFile processedFile = process(file);
-        String fileAsString = processedFileToText(processedFile);
-        String filteredMatchedText = match(fileAsString);
-
+    private void transform(File file) {
         try {
-            processedFile.close();
-            File finalFile = fileModifierEngine.modifyFile(processedFile, filteredMatchedText);
-            if (finalFile != null) {
-                System.out.println(file.getName() + " ==> " + finalFile.getName());
-                treatedFiles++;
-            }
+            FilePreparedForTreatment convenientFile = makeFileConvenient(file);
+            if (convenientFile != null) {
+                String fileAsString = fileToString(convenientFile);
+                String matchedText = getMatchedStringAfterApplyingSearchPattern(fileAsString);
+                convenientFile.close();
+                if(matchedText != null && !matchedText.isEmpty()){
+                    File outputFile = fileModifierEngine.modifyFile(convenientFile, matchedText);
+                    if (outputFile != null) {
+                        System.out.println(file.getName() + " ==> " + outputFile.getName());
+                        treatedFiles++;
+                    }
+                }
 
-        } catch (Exception e) {
+            }
+        } catch (FileNotTreatableException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    private ProcessedFile process(File file) {
-        ProcessedFile processedFile = null;
+    private FilePreparedForTreatment makeFileConvenient(File file) throws FileNotTreatableException {
+        FilePreparedForTreatment filePreparedForTreatment = null;
         if (file.isFile()) {
-            try {
-                processedFile = new ProcessedFile(file);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            filePreparedForTreatment = new FilePreparedForTreatment(file);
         }
-        return processedFile;
+        return filePreparedForTreatment;
     }
 
-    private String processedFileToText(ProcessedFile processedFile) {
+    private String fileToString(FilePreparedForTreatment filePreparedForTreatment) {
         String pdfAsString = null;
         try {
-            pdfAsString = processedFile.getFileParsedToText();
-        } catch (IOException e) {
+            pdfAsString = filePreparedForTreatment.getFileParsedToString();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return pdfAsString;
     }
 
-    private String match(String pdfAsString) {
+    private String getMatchedStringAfterApplyingSearchPattern(String pdfAsString) {
         Matcher matcher = matcherFactory.createMatcher(regex);
         return matcher.getMatchedString(pdfAsString);
     }
@@ -98,7 +90,7 @@ public class FileSearchAndRename {
     private boolean extensionIsValid(File file) {
         String fileName = file.getName();
         String fileExtension = fileName.substring(fileName.length() - FILE_EXTENSION.length());
-        return fileExtension.equals(FILE_EXTENSION);
+        return fileExtension.contains(FILE_EXTENSION);
 
     }
 }

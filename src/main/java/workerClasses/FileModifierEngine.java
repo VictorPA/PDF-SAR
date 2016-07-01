@@ -12,21 +12,23 @@ import java.nio.file.Path;
 public class FileModifierEngine {
 
 
-    public File modifyFile(ProcessedFile processedFile, String filteredMatchedText) throws IOException {
+    public File modifyFile(FilePreparedForTreatment filePreparedForTreatment, String filteredMatchedText) throws IOException {
 
-        Path source = processedFile.getPath();
+        Path source = filePreparedForTreatment.getPath();
         File finalFile = null;
 
         try {
-            if (!processedFile.getName().contains(filteredMatchedText)) {
-                Path target = source.resolveSibling(filteredMatchedText + "_" + processedFile.getName());
+            if (!filePreparedForTreatment.getOutputName().contains(filteredMatchedText)) {
+                Path target = source.resolveSibling(filteredMatchedText + "_" + filePreparedForTreatment.getOutputName());
                 Files.move(source, target);
                 finalFile = target.toFile();
             }
 
         } catch (FileAlreadyExistsException e) {
             System.out.println("Ne peut transformer " + source.getFileName() + " en " + filteredMatchedText +
-                    "_" + processedFile.getName() + " car le fichier existe déjà");
+                    "_" + filePreparedForTreatment.getOutputName() + " car le fichier existe déjà");
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
         return finalFile;
