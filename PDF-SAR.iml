@@ -13,9 +13,6 @@
     <orderEntry type="library" name="Maven: org.apache.pdfbox:pdfbox:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.pdfbox:fontbox:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: bouncycastle:bcprov-jdk16:136" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.pdfbox:pdfbox:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.pdfbox:fontbox:2.0.2" level="project" />
-    <orderEntry type="library" name="Maven: bouncycastle:bcprov-jdk16:136" level="project" />
   </component>
 </module>

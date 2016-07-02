@@ -1,6 +1,6 @@
-package workerClasses.guiGroup;
+package workerClasses.gui;
 
-import highClasses.FilesProvider;
+import searchAndTransform.FilesProvider;
 
 import javax.swing.*;
 import java.io.File;

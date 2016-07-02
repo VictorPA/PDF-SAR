@@ -1,12 +1,12 @@
 package app;
 
-import highClasses.FileSearchAndRename;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import utility.CommonMatcherFactory;
-import highClasses.MatcherFactory;
-import workerClasses.notGuiGroup.FileModifierEngine;
-import highClasses.FilesProvider;
-import workerClasses.guiGroup.FolderChooser;
+import searchAndTransform.FilesProvider;
+import searchAndTransform.MatcherFactory;
+import searchAndTransform.SearchAndRename;
+import workerClasses.factories.CommonMatcherFactory;
+import workerClasses.gui.FolderChooser;
+import workerClasses.infrastructure.Modifier;
 
 import java.security.Security;
 
@@ -22,9 +22,9 @@ public class Application {
         Security.addProvider(new BouncyCastleProvider());
 
         FilesProvider filesProvider = FolderChooser.newInstance();
-        FileModifierEngine fileModifierEngine = new FileModifierEngine();
+        Modifier modifier = new Modifier();
         MatcherFactory matcherFactory = new CommonMatcherFactory();
-        new FileSearchAndRename(REGEX_AS_STRING, fileModifierEngine, filesProvider,matcherFactory).searchAndTransform();
+        new SearchAndRename(REGEX_AS_STRING, modifier, filesProvider,matcherFactory).searchAndTransform();
 
     }
 }

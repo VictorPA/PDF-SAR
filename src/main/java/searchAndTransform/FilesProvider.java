@@ -1,4 +1,4 @@
-package highClasses;
+package searchAndTransform;
 
 import java.io.File;
 import java.util.List;

@@ -1,7 +1,8 @@
-package utility;
+package workerClasses.factories;
 
-import highClasses.Matcher;
-import highClasses.MatcherFactory;
+import searchAndTransform.Matcher;
+import searchAndTransform.MatcherFactory;
+import workerClasses.infrastructure.NumberMatcher;
 
 /**
  * Created by Victor on 25/06/2016.

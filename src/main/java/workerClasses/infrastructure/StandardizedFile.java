@@ -1,4 +1,4 @@
-package workerClasses.notGuiGroup;
+package workerClasses.infrastructure;
 
 
 import org.apache.pdfbox.cos.COSDocument;
@@ -14,15 +14,15 @@ import java.nio.file.Path;
 /**
  * Created by Victor on 25/06/2016.
  */
-public abstract class FilePreparedForTreatment {
+public abstract class StandardizedFile {
 
     protected File file;
 
-    private FilePreparedForTreatment(File file) {
+    private StandardizedFile(File file) {
         this.file = file;
     }
 
-    public static FilePreparedForTreatment getPreparedFileForTreatment(File file) {
+    public static StandardizedFile getPreparedFileForTreatment(File file) {
         try {
             return new PdfPrepareForTreatement(file);
         } catch (IOException e) {
@@ -31,19 +31,20 @@ public abstract class FilePreparedForTreatment {
     }
 
 
-
     public abstract String getFileParsedToString() throws IOException;
-    public abstract void close() throws IOException;
-    public abstract String getOutputName();
+
+    public abstract void dispose() throws IOException;
+
+    public String getOutputName() {
+        return file.getName();
+    }
 
     public Path getPath() {
         return this.file.toPath();
     }
 
 
-
-
-    private static class PdfPrepareForTreatement extends FilePreparedForTreatment {
+    private static class PdfPrepareForTreatement extends StandardizedFile {
 
 
         private PDFTextStripper pdfStripper;
@@ -66,20 +67,15 @@ public abstract class FilePreparedForTreatment {
             return this.pdfStripper.getText(pdDoc);
         }
 
-        public void close() throws IOException {
+        public void dispose() throws IOException {
             this.pdDoc.close();
             this.cosDoc.close();
             this.randomAccessFile.close();
         }
 
-        @Override
-        public String getOutputName() {
-            return file.getName();
-        }
-
     }
 
-    private static class NullPdfBox extends FilePreparedForTreatment {
+    private static class NullPdfBox extends StandardizedFile {
 
         private NullPdfBox(File file) {
             super(file);
@@ -88,15 +84,11 @@ public abstract class FilePreparedForTreatment {
         @Override
         public String getFileParsedToString() throws IOException {
             return "";
+
         }
 
         @Override
-        public String getOutputName() {
-            return "";
-        }
-
-        @Override
-        public void close() throws IOException {
+        public void dispose() throws IOException {
 
         }
     }

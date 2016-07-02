@@ -1,4 +1,4 @@
-package utility;
+package workerClasses.infrastructure;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Victor on 25/06/2016.
  */
-public class NumberMatcher implements highClasses.Matcher{
+public class NumberMatcher implements searchAndTransform.Matcher{
 
     private String regex;
 
